@@ -106,13 +106,17 @@ int InsertSort(int A[], int n)
     { 
         t = A[i];
         j = i - 1;
-        c++;
-        while (j >= 0 && A[j] > t) 
+        while (j >= 0 ) 
         {
             c++;
-            A[j + 1] = A[j];
+            if (A[j] > t)
+            {
+                A[j + 1] = A[j];
+                m++;
+                
+            }
+            else break;
             j--;
-            m++;
             
         }
         A[j + 1] = t;
