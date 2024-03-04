@@ -104,6 +104,28 @@ int InsertSort(int A[], int n)
     return m+c;
 }
 
+int ShellSort(int A[], int n) 
+{
+    
+    int m=0,c=0;
+    for (int interval = n / 2; interval > 0; interval /= 2) 
+    {
+        for (int i = interval; i < n; i += 1) 
+        {
+            int temp = A[i];
+            int j;
+            for (j = i; j >= interval && A[j - interval] > temp; j -= interval) 
+            {
+                A[j] = A[j - interval];
+                m += 3;
+                c++;
+            }
+            A[j] = temp;
+            m+=2;
+        }
+    }
+    return m+c;
+}
 
 int main()
 {
@@ -151,6 +173,8 @@ int main()
     std::vector<sf::Vertex> bubbleSort;
     std::vector<sf::Vertex> shakerSort;
     std::vector<sf::Vertex> insertSort;
+    std::vector<sf::Vertex> shellSort;
+    
 
     for (int n=0; n<=700;n++)
     {
@@ -167,6 +191,9 @@ int main()
         FillRand(A,n);
         t=InsertSort(A,n);
         insertSort.push_back(sf::Vertex(sf::Vector2f(10 + n*2, 750 - t*0.05 ), sf::Color::Red));
+        FillRand(A,n);
+        t=ShellSort(A,n);
+        shellSort.push_back(sf::Vertex(sf::Vector2f(10 + n*2, 750 - t*0.05 ), sf::Color::Magenta));
     }
 
     while (window.isOpen())
@@ -184,6 +211,7 @@ int main()
         window.draw(bubbleSort.data(), selectSort.size(), sf::LinesStrip);
         window.draw(shakerSort.data(), selectSort.size(), sf::LinesStrip);
         window.draw(insertSort.data(), selectSort.size(), sf::LinesStrip);
+        window.draw(shellSort.data(), selectSort.size(), sf::LinesStrip);
         for (auto& txt: texts) window.draw(txt);
         window.display();
     }
