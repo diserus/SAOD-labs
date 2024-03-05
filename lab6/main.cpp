@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 using namespace std;
 
 void FillInc(int A[],int n) 
@@ -74,6 +75,11 @@ int ShellSort(int A[], int n)
     }
     return m+c;
 }
+int steps(int m)
+{
+    if (m == 1) return 1;
+    if (m > 1) return 2* steps(m-1)+1;
+}
 
 int main()
 {
@@ -81,11 +87,17 @@ int main()
     for (int size = 100; size <= 500; size += 100) {
         
         int A[size];
-        FillRand(A,size);
+        FillInc(A,size);
         int mc_count_insert=InsertSort(A,size);
+        FillInc(A,size);
         int mc_count_shell=ShellSort(A,size);
-
-        cout << size << "\t\t" << mc_count_insert << "\t" << mc_count_shell << "\n";
+        int m = log2(size)-1;
+        cout << size << "\t " << m <<"\t" << mc_count_insert << "\t" << mc_count_shell <<"\t\t";
+        for (int i = 1; i <=m; i++)
+        {
+            cout << "h" << i << " = " << steps(i) << "\t"; 
+        }
+        cout << "\n";
     }
     return 0;
 }
