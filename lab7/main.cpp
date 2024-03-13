@@ -51,8 +51,9 @@ int binarySearch2(int A[],int n,int elem,int &c)
         else 
             r=i;
     }
+    c++;
     if (A[r]==elem) 
-        return i;
+        return r;
     else
         return -1;
 }
