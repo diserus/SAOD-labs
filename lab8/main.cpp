@@ -10,7 +10,7 @@ typedef struct
     string firstname,lastname,otchestvo,phoneNumber;
 } phoneInfo;
 
-bool comprassion(phoneInfo x, phoneInfo y,int &fKey,int &sKey)
+bool comprassion(phoneInfo x, phoneInfo y,int &fKey,int &sKey,bool &reverse)
 {
     string fKeyPole1 ,fKeyPole2, sKeyPole1,sKeyPole2 ;
     switch(fKey)
@@ -27,16 +27,27 @@ bool comprassion(phoneInfo x, phoneInfo y,int &fKey,int &sKey)
         case 3: {sKeyPole1 = x.otchestvo; sKeyPole2 = y.otchestvo; break;}
         case 4: {sKeyPole1 = x.phoneNumber; sKeyPole2 = y.phoneNumber; break;}
     }
-    if (fKeyPole1 < fKeyPole2) 
-        return true;
-    else if (fKeyPole1 > fKeyPole2)
-        return false;
-    else 
-        return sKeyPole1 < sKeyPole2;
-        
+    if (reverse)
+    {
+        if (fKeyPole1 > fKeyPole2) 
+            return true;
+        else if (fKeyPole1 < fKeyPole2)
+            return false;
+        else 
+            return sKeyPole1 > sKeyPole2;
+    }
+    else
+    {
+        if (fKeyPole1 < fKeyPole2) 
+            return true;
+        else if (fKeyPole1 > fKeyPole2)
+            return false;
+        else 
+            return sKeyPole1 < sKeyPole2;
+    }
 }
 
-void SelectSort(vector <phoneInfo> &phoneBook,int &fKey,int &sKey)
+void SelectSort(vector <phoneInfo> &phoneBook,int &fKey,int &sKey,bool &reverse)
 {
     int k;
     int n=phoneBook.size();
@@ -45,7 +56,7 @@ void SelectSort(vector <phoneInfo> &phoneBook,int &fKey,int &sKey)
         k = i;
         for (int j=i+1; j<n; j++)
         {
-            if (comprassion(phoneBook[j],phoneBook[k],fKey,sKey)) k = j;
+            if (comprassion(phoneBook[j],phoneBook[k],fKey,sKey,reverse)) k = j;
         }
         
         
@@ -105,7 +116,8 @@ int main()
             case 4: {sKey=4; break;}
         }
     }
-    SelectSort(phoneBook,fKey,sKey);
+    bool reverse = true;
+    SelectSort(phoneBook,fKey,sKey,reverse);
     printTable(phoneBook);
     return 0;
 }
