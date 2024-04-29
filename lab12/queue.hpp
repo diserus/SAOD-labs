@@ -5,15 +5,15 @@ template <typename T>
 class Queue
 {
 private:
-    Node<T> *front;
-    Node<T> *rear;
+    Node<T> *head;
+    Node<T> *tail;
     int sizeOfQueue;
 
 public:
     Queue()
     {
-        front = nullptr;
-        rear = nullptr;
+        head = nullptr;
+        tail = nullptr;
     }
 
     ~Queue()
@@ -24,7 +24,7 @@ public:
 
     bool isEmpty()
     {
-        return front == nullptr;
+        return head == nullptr;
     }
 
     void push(T data)
@@ -35,13 +35,13 @@ public:
         sizeOfQueue++;
         if (isEmpty())
         {
-            front = newNode;
-            rear = newNode;
+            head = newNode;
+            tail = newNode;
         }
         else
         {
-            rear->next = newNode;
-            rear = newNode;
+            tail->next = newNode;
+            tail = newNode;
         }
     }
 
@@ -50,8 +50,8 @@ public:
         if (!isEmpty())
         {
 
-            Node<T> *temp = front;
-            front = front->next;
+            Node<T> *temp = head;
+            head = head->next;
             sizeOfQueue--;
             delete temp;
         }
@@ -61,7 +61,7 @@ public:
     {
         if (!isEmpty())
         {
-            return front->data;
+            return head->data;
         }
     }
 
@@ -75,7 +75,7 @@ public:
         if (!isEmpty())
         {
 
-            Node<T> *temp = front;
+            Node<T> *temp = head;
             while (temp != nullptr)
             {
                 std::cout << temp->data << " ";
@@ -116,7 +116,7 @@ public:
         T sum = 0;
         if (!isEmpty())
         {
-            Node<T> *temp = front;
+            Node<T> *temp = head;
             while (temp != nullptr)
             {
                 sum += temp->data;
@@ -131,7 +131,7 @@ public:
         T k = 1;
         if (!isEmpty())
         {
-            Node<T> *temp = front;
+            Node<T> *temp = head;
             while (temp->next != nullptr)
             {
                 if (temp->data <= temp->next->data)
@@ -152,5 +152,44 @@ public:
     {
         while (!isEmpty())
             pop();
+    }
+
+    Node<T> *getHeadNext()
+    {
+        if (!isEmpty() && head->next != nullptr)
+        {
+            return head->next;
+        }
+        return nullptr;
+    }
+    Node<T> *getHead()
+    {
+        if (head != nullptr)
+        {
+            return head;
+        }
+        return nullptr;
+    }
+    void setHead(Node<T> *node)
+    {
+        head = node;
+    }
+    Node<T> *getTail()
+    {
+        if (tail != nullptr)
+        {
+            return tail;
+        }
+        return nullptr;
+    }
+    void setTailNext(Node<T> *node)
+    {
+        tail->next = node;
+    }
+
+    void init()
+    {
+        head = nullptr;
+        tail = nullptr;
     }
 };
