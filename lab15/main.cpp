@@ -3,10 +3,10 @@
 #include <iomanip>
 using namespace std;
 
-struct List
+struct Element
 {
     int key;
-    List *next;
+    Element *next;
 };
 
 int hashFunction(int key, int tableSize)
@@ -14,15 +14,14 @@ int hashFunction(int key, int tableSize)
     return key % tableSize;
 }
 
-int countCollisions(vector<List *> table)
+int countCollisions(vector<Element *> &hashTable)
 {
-    int collisions = -table.size();
-    for (List *list : table)
+    int collisions = 0;
+    for (int i = 0; i < hashTable.size(); i++)
     {
-        if (list != nullptr)
+        if (hashTable[i] != nullptr)
         {
-            collisions++;
-            List *current = list;
+            Element *current = hashTable[i];
             while (current->next != nullptr)
             {
                 collisions++;
@@ -33,62 +32,78 @@ int countCollisions(vector<List *> table)
     return collisions;
 }
 
-void printList(List *list)
+void printHashTable(vector<Element *> &hashTable)
 {
-    if (list == nullptr)
+    for (int i = 0; i < hashTable.size(); i++)
     {
-        cout << "List is empty" << endl;
-        return;
+        cout << "List " << i + 1 << ": ";
+        Element *current = hashTable[i];
+        while (current != nullptr)
+        {
+            cout << current->key << " ";
+            current = current->next;
+        }
+        cout << endl;
     }
+}
 
-    List *current = list;
+void insertElement(vector<Element *> &hashTable, int key)
+{
+    int index = hashFunction(key, hashTable.size());
+    Element *newElement = new Element;
+    newElement->key = key;
+    newElement->next = hashTable[index];
+    hashTable[index] = newElement;
+}
+
+void searchElement(vector<Element *> &hashTable, int key)
+{
+    int index = hashFunction(key, hashTable.size());
+    Element *current = hashTable[index];
+    int position = 0;
+
     while (current != nullptr)
     {
-        cout << current->key << " ";
+        if (current->key == key)
+        {
+            int listIndex = index;
+            cout << "List: " << index + 1 << "\n";
+            cout << "Position: " << position + 1 << "\n";
+            return;
+        }
+        position++;
         current = current->next;
     }
-    cout << endl;
+    cout << "Element didn't found\n";
 }
 
 int main()
 {
-
-    // int tableSize = 5;
-
-    // vector<List *> table(tableSize, nullptr);
-
-    // int keys[] = {17, 18, 16, 9, 6, 15, 12, 19, 20, 1, 10, 3};
-    // for (int key : keys)
-    // {
-    //     int index = hashFunction(key, tableSize);
-    //     List *newList = new List;
-    //     newList->key = key;
-
-    //     newList->next = table[index];
-    //     table[index] = newList;
-    // }
-
-    // int collisions = countCollisions(table);
-    // cout << "Number of collisions: " << collisions << endl;
-
-    // for (int i = 0; i < tableSize; i++)
-    // {
-    //     cout << "List " << i << ": ";
-    //     List *current = table[i];
-    //     while (current != nullptr)
-    //     {
-    //         cout << current->key << " ";
-    //         current = current->next;
-    //     }
-    //     cout << endl;
-    // }
-    cout << setw(5) << "Size" << setw(10) << "N symb" << setw(10) << "N collisions" << "\n";
-
-    for (int size = 11; size < 102; size += 10)
+    srand(time(0));
+    int table_sizes[] = {11, 13, 17, 19, 23, 29, 31, 37, 41, 43};
+    cout << setw(5) << "Size" << setw(10) << "N symb" << setw(15) << "N collisions" << "\n";
+    for (int table_size : table_sizes)
     {
-        vector<List *> table(size, nullptr);
+        vector<Element *> hash_table(table_size, nullptr);
 
-        cout << setw(5) << size;
+        for (int i = 0; i < 100; i++)
+        {
+            int elem = rand() % 10000;
+            insertElement(hash_table, elem);
+        }
+
+        int collisions = countCollisions(hash_table);
+
+        cout << setw(5) << table_size;
+        cout << setw(10) << 100;
+        cout << setw(15) << collisions;
+        cout << endl;
     }
+    vector<Element *> hash_table(5, nullptr);
+    vector<int> keys = {15, 66, 16, 12, 1, 0, 5, 8478, 1, 3, 97, 4, 5654, 1, 51, 89};
+    for (int key : keys)
+        insertElement(hash_table, key);
+    printHashTable(hash_table);
+    searchElement(hash_table, 8478);
     return 0;
 }
