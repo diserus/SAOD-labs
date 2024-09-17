@@ -76,32 +76,6 @@ void PrintList(List *p)
     cout << endl;
 }
 
-void SummaList(List *p)
-{
-    int summa = 0;
-    while (p != NULL)
-    {
-        summa += p->data;
-        p = p->next;
-    }
-    cout << "Summa = " << summa << endl;
-}
-
-void RunNumberList(List *p, int n)
-{
-    int r = 1, temp;
-    for (int i = 0; i < n - 1; i++)
-    {
-        temp = p->data;
-        p = p->next;
-        if (temp > p->data)
-        {
-            r++;
-        }
-    }
-    cout << "Series = " << r << endl;
-}
-
 void merge(List **a, int q, List **b, int r, Queue *c, int &C, int &M)
 {
     while (q != 0 && r != 0)
@@ -211,57 +185,10 @@ int MergeSort(List *(&S), List *(&tail))
     return M + C;
 }
 
-void NumbersEl(List *p)
-{
-    cnt = 0;
-    while (p != NULL)
-    {
-        p = p->next;
-        cnt += 1;
-    }
-    cout << "Number of elements - " << cnt << endl;
-}
-
 int main()
 {
-    int n;
     List *head = NULL, *tail = NULL;
     int inc, dec, rand, teor;
-
-    n = 21;
-    List *a = NULL, *b = NULL;
-    Queue c[2];
-    c[0].tail = (List *)&(c[0].head);
-    c[1].tail = (List *)&(c[1].head);
-    int i = 0;
-    int C = 0, M = 0;
-    int cnt_a = 0, cnt_b = 0;
-    FillRand(n, head);
-    cout << "Origin list: " << endl;
-    PrintList(head);
-    NumbersEl(head);
-    Split(head, &a, &b, n);
-    cout << endl
-         << "list a: ";
-    PrintList(a);
-    cnt = 0;
-    NumbersEl(a);
-    cnt_a = cnt;
-    cout << endl
-         << "list b: ";
-    PrintList(b);
-    cnt = 0;
-    NumbersEl(b);
-    cnt_b = cnt;
-    cout << endl;
-    printf("Merged list: ");
-    merge(&a, cnt_a, &b, cnt_b, &c[i], C, M);
-    PrintList(head);
-    cout << endl;
-    printf("Merged sorted list: \n");
-    n = MergeSort(head, tail);
-    PrintList(head);
-    RunNumberList(head, (cnt_a + cnt_b));
 
     cout << endl
          << " " << setw(22) << "MergeSort" << endl;

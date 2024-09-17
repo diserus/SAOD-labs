@@ -9,7 +9,7 @@ struct List
     List *next;
     union
     {
-        int data;
+        long int data;
         unsigned char Digit[sizeof(data)];
     };
 };
@@ -20,7 +20,7 @@ struct Queue
     List *tail;
 };
 
-void QueueFillInc(int n, List *(&head), List *(&tail))
+void FillInc(int n, List *(&head), List *(&tail))
 {
     int i = 1;
     List *p;
@@ -40,7 +40,7 @@ void QueueFillInc(int n, List *(&head), List *(&tail))
     tail->next = 0;
 }
 
-void QueueFillDec(int n, List *(&head), List *(&tail))
+void FillDec(int n, List *(&head), List *(&tail))
 {
     int i = n;
     List *p;
@@ -60,7 +60,7 @@ void QueueFillDec(int n, List *(&head), List *(&tail))
     tail->next = 0;
 }
 
-void QueueFillRand(int n, List *(&head), List *(&tail))
+void FillRand(int n, List *(&head), List *(&tail))
 {
     srand(time(NULL));
     int i = 1;
@@ -161,11 +161,11 @@ int main()
     cout << " N" << setw(8) << "M teor" << setw(9) << "Inc" << setw(10) << "Dec" << setw(10) << "Rand" << endl;
     for (int n = 100; n < 600; n += 100)
     {
-        QueueFillInc(n, head, tail);
+        FillInc(n, head, tail);
         inc = DigitalSort(head, tail);
-        QueueFillDec(n, head, tail);
+        FillDec(n, head, tail);
         dec = DigitalSort(head, tail);
-        QueueFillRand(n, head, tail);
+        FillRand(n, head, tail);
         rand = DigitalSort(head, tail);
         teor = 4 * (n + 256);
         cout << n << setw(6) << teor << setw(10) << inc << setw(10) << dec << setw(9) << rand << endl;
