@@ -77,13 +77,31 @@ void work(vertex *Root, int &sum)
         work(Root->Right, sum);
     }
 }
+vertex *search(vertex *root, int key)
+{
+    vertex *p = root;
+    while (p != nullptr)
+    {
+        if (key < p->Data)
+            p = p->Left;
+        else if (key > p->Data)
+            p = p->Right;
+        else
+            break;
+    }
+    if (p != nullptr)
+        return p;
+    else
+        return nullptr;
+}
+
 int main()
 {
     srand(time(0));
     int N = 100;
     int A[N];
     for (int i = 0; i < N; i++)
-        A[i] = rand() % 200;
+        A[i] = rand() % 500;
     BubbleSort(A, N);
     vertex *root = ISDP(0, N - 1, A);
     int sum = 0;
@@ -92,5 +110,13 @@ int main()
     std::cout << "\nSize: " << size(root);
     std::cout << "\nHeight: " << height(root);
     std::cout << "\nAverage height: " << std::setprecision(2) << std::fixed << SDP(root, 1) / size(root);
+    vertex *elem = search(root, 6);
+    std::cout << "\n";
+    if (elem != nullptr)
+    {
+        std::cout << "Success: " << elem->Data;
+    }
+    else
+        std::cout << "Fail";
     return 0;
 }
