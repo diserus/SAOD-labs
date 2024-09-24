@@ -6,7 +6,7 @@ struct vertex
     vertex *Left;
     vertex *Right;
 };
-void addDoubleKos(vertex *&root, int data)
+bool addDoubleKos(vertex *&root, int data)
 {
     vertex **p = &root;
     while (*p != nullptr)
@@ -18,7 +18,7 @@ void addDoubleKos(vertex *&root, int data)
         else
         {
             std::cout << "Data this the key " << data << " already in tree\n";
-            return;
+            return false;
         }
     }
     if (*p == nullptr)
@@ -28,9 +28,11 @@ void addDoubleKos(vertex *&root, int data)
         (*p)->Right = nullptr;
         (*p)->Left = nullptr;
     }
+    return true;
 }
-void addRecurse(vertex *&root, int data)
+bool addRecurse(vertex *&root, int data)
 {
+    bool boool = true;
     if (root == nullptr)
     {
         root = new vertex;
@@ -39,31 +41,37 @@ void addRecurse(vertex *&root, int data)
         root->Right = nullptr;
     }
     else if (data < root->Data)
-        addRecurse(root->Left, data);
+        boool = addRecurse(root->Left, data);
     else if (data > root->Data)
-        addRecurse(root->Right, data);
+        boool = addRecurse(root->Right, data);
     else
     {
         std::cout << "Data this the key " << data << " already in tree\n";
+        boool = false;
     }
+    return boool;
 }
 vertex *createDoubleKos(int n)
 {
     vertex *root = nullptr;
-    for (int i = 0; i < n; i++)
+    int i = 0;
+    while (i < n)
     {
         int data = rand() % 500;
-        addDoubleKos(root, data);
+        if (addDoubleKos(root, data))
+            i++;
     }
     return root;
 }
 vertex *createRecurse(int n)
 {
     vertex *root = nullptr;
-    for (int i = 0; i < n; i++)
+    int i = 0;
+    while (i < n)
     {
         int data = rand() % 500;
-        addRecurse(root, data);
+        if (addRecurse(root, data))
+            i++;
     }
     return root;
 }
