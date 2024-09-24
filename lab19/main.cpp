@@ -30,6 +30,23 @@ bool addDoubleKos(vertex *&root, int data)
     }
     return true;
 }
+vertex *search(vertex *root, int key)
+{
+    vertex *p = root;
+    while (p != nullptr)
+    {
+        if (key < p->Data)
+            p = p->Left;
+        else if (key > p->Data)
+            p = p->Right;
+        else
+            break;
+    }
+    if (p != nullptr)
+        return p;
+    else
+        return nullptr;
+}
 bool addRecurse(vertex *&root, int data)
 {
     bool boool = true;
@@ -177,5 +194,14 @@ int main()
     std::cout << "ISDP" << std::setw(12) << size(root3) << std::setw(15) << checkSum(root3) << std::setw(13) << height(root3) << std::setw(16) << SDP(root3, 1) / size(root3) << "\n";
     std::cout << "SDP1" << std::setw(12) << size(root1) << std::setw(15) << checkSum(root1) << std::setw(13) << height(root1) << std::setw(16) << std::setprecision(2) << std::fixed << SDP(root1, 1) / size(root1) << "\n";
     std::cout << "SDP2" << std::setw(12) << size(root2) << std::setw(15) << checkSum(root2) << std::setw(13) << height(root2) << std::setw(16) << std::setprecision(2) << std::fixed << SDP(root2, 1) / size(root2) << "\n";
+    vertex *elem = search(root2, 496);
+    std::cout << "\n";
+    if (elem != nullptr)
+    {
+        std::cout << "Success: " << elem->Data;
+    }
+    else
+        std::cout << "Fail";
+    return 0;
     return 0;
 }
