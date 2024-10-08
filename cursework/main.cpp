@@ -13,6 +13,41 @@ struct record
     short int d;
     char e[10];
 };
+struct List
+{
+    List *next;
+    record data;
+};
+
+struct Queue
+{
+    List *head;
+    List *tail;
+    void add(record *rec)
+    {
+        List *newNode = new List;
+        newNode->data = *rec;
+        newNode->next = nullptr;
+        if (head == nullptr)
+        {
+            head = newNode;
+            tail = newNode;
+        }
+        else
+        {
+            tail->next = newNode;
+            tail = newNode;
+        }
+    }
+    void print()
+    {
+        while (head != nullptr)
+        {
+            cout << head->data.a << " " << head->data.b << " " << head->data.c << "\t"
+                 << head->data.d << "\t" << head->data.e << endl;
+        }
+    }
+};
 
 void parseDate(char *date, int &day, int &month, int &year)
 {
@@ -60,7 +95,24 @@ void QuickSort(record *arr[], int L, int R)
     if (i < R)
         QuickSort(arr, i, R);
 }
-
+int binarySearch(int A[], int n, int elem)
+{
+    int l = 0;
+    int r = n - 1;
+    int i = 0;
+    while (l < r)
+    {
+        i = (l + r) / 2;
+        if (A[i] < elem)
+            l = i + 1;
+        else
+            r = i;
+    }
+    if (A[r] == elem)
+        return r;
+    else
+        return -1;
+}
 int main()
 {
     FILE *fp = fopen("testBase4.dat", "rb");
