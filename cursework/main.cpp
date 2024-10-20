@@ -59,6 +59,13 @@ struct Queue
     }
 };
 
+struct vertex
+{
+    int data;
+    vertex *Left = nullptr;
+    vertex *Right = nullptr;
+    int balance;
+};
 void parseDate(char *date, int &day, int &month, int &year)
 {
     std::sscanf(date, "%2d-%2d-%2d", &day, &month, &year);
@@ -148,6 +155,96 @@ int binarySearch(record *A[], int n, int elem, Queue *queue)
     }
     return 1;
 }
+
+bool B2INSERT(vertex *&p, int data, bool &VR, bool &HR)
+{
+    if (p == nullptr)
+    {
+        p = new vertex;
+        p->data = data;
+        p->Left = p->Right = nullptr;
+        p->balance = false;
+        VR = true;
+    }
+    else if (p->data > data)
+    {
+        if (B2INSERT(p->Left, data, VR, HR))
+        {
+            if (VR)
+            {
+                if (!p->balance)
+                {
+                    vertex *q = p->Left;
+                    p->Left = q->Right;
+                    q->Right = p;
+                    p = q;
+                    q->balance = true;
+                    VR = false;
+                    HR = true;
+                }
+                else
+                {
+                    p->balance = false;
+                    VR = true;
+                    HR = false;
+                }
+            }
+            else
+                HR = false;
+        }
+        else
+            return false;
+    }
+    else if (p->data < data)
+    {
+        if (B2INSERT(p->Right, data, VR, HR))
+        {
+            if (VR)
+            {
+                p->balance = true;
+                HR = true;
+                VR = false;
+            }
+            else if (HR)
+            {
+                if (p->balance)
+                {
+                    vertex *q = p->Right;
+                    p->balance = false;
+                    q->balance = false;
+                    p->Right = q->Left;
+                    q->Left = p;
+                    p = q;
+                    VR = true;
+                    HR = false;
+                }
+                else
+                    HR = false;
+            }
+        }
+        else
+            return false;
+    }
+    else
+        return false;
+    return true;
+}
+
+vertex *createDBD(int n, bool &VR, bool &HR, bool log)
+{
+    vertex *root = NULL;
+    int i = 0;
+    while (i < n)
+    {
+        int data = rand() % 1000;
+        if (B2INSERT(root, data, VR, HR))
+            i++;
+        else
+            std::cout << "Data with key " << data << " already in tree\n";
+    }
+    return root;
+}
+
 void displayRecords(record *indexArr[])
 {
     int i = 0;
