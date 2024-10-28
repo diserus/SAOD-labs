@@ -1,5 +1,7 @@
 #include <iostream>
 #include <iomanip>
+bool HR;
+bool VR;
 struct vertex
 {
     int Data;
@@ -136,8 +138,8 @@ vertex *createDBD(int n, bool &VR, bool &HR)
         int data = rand() % 1000;
         if (insertDBD(root, data, VR, HR))
             i++;
-        else
-            std::cout << "Data with key " << data << " already in tree \n";
+        // else
+        //     std::cout << "Data with key " << data << " already in tree \n";
     }
     return root;
 }
@@ -301,8 +303,7 @@ vertex *createAVL(int n)
 }
 int main()
 {
-    bool HR;
-    bool VR;
+    srand(time(0));
     vertex *root = createDBD(100, VR, HR);
     vertex *root2 = createAVL(100);
     work(root);
