@@ -1,267 +1,236 @@
+#include <cstdlib>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
+#include <cmath>
 #include <algorithm>
+
+using namespace std;
+
+const int N = 10;
+
 struct vertex
 {
     int data;
-    int weight;
-    vertex *left = nullptr;
-    vertex *right = nullptr;
+    int W;
+    int h;
+    vertex *left;
+    vertex *right;
 };
 
-void calculation_AW(int **AW, int **VW, int size)
+int Size(vertex *p)
+{
+    if (p == NULL)
+        return 0;
+    return 1 + Size(p->left) + Size(p->right);
+}
+
+int Sum(vertex *p)
+{
+    if (p == NULL)
+        return 0;
+    return p->data + Sum(p->left) + Sum(p->right);
+}
+
+int Height(vertex *p)
+{
+    if (p == NULL)
+        return 0;
+    return 1 + max(Height(p->left), Height(p->right));
+}
+
+float SumPaths(vertex *p, int L)
+{
+    if (p == NULL)
+        return 0;
+    return L + SumPaths(p->left, L + 1) + SumPaths(p->right, L + 1);
+}
+
+void ObhodLR(vertex *p)
+{
+    if (p != NULL)
+    {
+        ObhodLR(p->left);
+        cout << p->data << "  ";
+        ObhodLR(p->right);
+    }
+}
+
+bool isUnique(int num, int *arr, int size)
 {
     for (int i = 0; i < size; i++)
     {
-        for (int j = (i + 1); j < size; j++)
+        if (arr[i] == num)
         {
-            AW[i][j] = AW[i][j - 1] + VW[1][j];
+            return false;
+        }
+    }
+    return true;
+}
+
+// Функция для вычисления матрицы AW
+void matrixAW(int AW[][N + 1], int weights[], int N)
+{
+    for (int i = 0; i <= N; ++i)
+    {
+        for (int j = i + 1; j <= N; ++j)
+        {
+            AW[i][j] = AW[i][j - 1] + weights[j - 1];
         }
     }
 }
 
-void calculation_APandAR(int **AP, int **AR, int **AW, int size)
+// Функция для вычисления матриц AP и AR
+void matrixAP_AR(int AW[][N + 1], int AP[][N + 1], int AR[][N + 1], int N)
 {
-    for (int i = 0; i < size - 1; i++)
+    for (int i = 0; i < N; ++i)
     {
         int j = i + 1;
         AP[i][j] = AW[i][j];
         AR[i][j] = j;
     }
-    for (int h = 2; h < size; h++)
+
+    for (int h = 2; h <= N; ++h)
     {
-        for (int i = 0; i < size - h; i++)
+        for (int i = 0; i <= N - h; ++i)
         {
             int j = i + h;
             int m = AR[i][j - 1];
-            int min = AP[i][m - 1] + AP[m][j];
-            for (int k = m + 1; k <= AR[i + 1][j]; k++)
+            float minCost = AP[i][m - 1] + AP[m][j];
+
+            for (int k = m + 1; k <= AR[i + 1][j]; ++k)
             {
-                int x = AP[i][k - 1] + AP[k][j];
-                if (x < min)
+                float cost = AP[i][k - 1] + AP[k][j];
+                if (cost < minCost)
                 {
                     m = k;
-                    min = x;
+                    minCost = cost;
                 }
             }
-            AP[i][j] = min + AW[i][j];
+
+            AP[i][j] = minCost + AW[i][j];
             AR[i][j] = m;
         }
     }
 }
-void addRST_R(vertex *&p, int data, int weight)
+
+// Функция для построения дерева на основе матрицы AR
+vertex *createTree(int keys[], int weights[], int AR[][N + 1], int L, int R)
 {
-    if (p == NULL)
+    if (L < R)
     {
-        p = new vertex;
-        p->data = data;
-        p->weight = weight;
+        int k = AR[L][R];
+        vertex *root = new vertex;
+        root->data = keys[k - 1];
+        root->W = weights[k - 1]; // Присваиваем вес
+        root->left = createTree(keys, weights, AR, L, k - 1);
+        root->right = createTree(keys, weights, AR, k, R);
+        return root;
     }
-    else if (data < p->data)
-        addRST_R(p->left, data, weight);
-    else if (data > p->data)
-        addRST_R(p->right, data, weight);
-}
-void createvertex(vertex *&root, int lBorder, int rBorder, int **AR, int **VW)
-{
-    if (lBorder < rBorder)
-    {
-        int k = AR[lBorder][rBorder];
-        addRST_R(root, VW[0][k], VW[1][k]);
-        createvertex(root, lBorder, k - 1, AR, VW);
-        createvertex(root, k, rBorder, AR, VW);
-    }
+    return NULL;
 }
 
-void printSquareMatrix(int **arr, int size)
+// Функция для вывода матриц
+void printMatrix(int matrix[][N + 1], int N, const string &name)
 {
-    for (int i = 0; i < size; i++)
+    cout << "Matrix " << name << ":\n";
+    for (int i = 0; i <= N; ++i)
     {
-        for (int j = 0; j < size; j++)
+        for (int j = 0; j <= N; ++j)
         {
-            std::cout.width(5);
-            std::cout << arr[i][j] << " ";
+            if (matrix[i][j] == 0 && i != j)
+                cout << setw(5) << " " << " ";
+            else
+                cout << setw(5) << matrix[i][j] << " ";
         }
-        std::cout << std::endl;
+        cout << endl;
     }
-}
-void work(vertex *p)
-{
-    if (p != nullptr)
-    {
-        work(p->left);
-        std::cout << p->data << " ";
-        work(p->right);
-    }
-}
-int max(int a, int b)
-{
-    if (a > b)
-        return a;
-    else
-        return b;
+    cout << endl;
 }
 
-int sizeTree(vertex *vertex)
+// Рекурсивная функция для инициализации высоты узлов дерева
+void h_init(vertex *p, int &Wh)
 {
-    if (vertex == nullptr)
-        return 0;
-    else
-        return 1 + sizeTree(vertex->left) + sizeTree(vertex->right);
-}
-
-int height(vertex *vertex)
-{
-    if (vertex == nullptr)
-        return 0;
-    else
-        return 1 + max(height(vertex->left), height(vertex->right));
-}
-double SDP(vertex *vertex, int L)
-{
-    if (vertex == nullptr)
-        return 0;
-    else
-        return L + SDP(vertex->left, L + 1) + SDP(vertex->right, L + 1);
-}
-int checkSum(vertex *p)
-{
-    if (p == nullptr)
-        return 0;
-    else
-        return (p->data + checkSum(p->left) + checkSum(p->right));
-}
-int sumLengthWaysTreeDOP(vertex *root, int L)
-{
-    int S;
-    if (root == nullptr)
+    if (p != NULL)
     {
-        S = 0;
+        if (p->left != NULL)
+        {
+            p->left->h = p->h + 1;
+            Wh += p->left->h * p->left->W;
+        }
+        if (p->right != NULL)
+        {
+            p->right->h = p->h + 1;
+            Wh += p->right->h * p->right->W;
+        }
+        h_init(p->left, Wh);
+        h_init(p->right, Wh);
     }
-    else
-    {
-        S = root->weight * L + sumLengthWaysTreeDOP(root->left, L + 1) + sumLengthWaysTreeDOP(root->right, L + 1);
-    }
-    return S;
-}
-int weightTree(vertex *root)
-{
-    int n;
-    if (root == nullptr)
-    {
-        n = 0;
-    }
-    else
-    {
-        n = root->weight + weightTree(root->left) + weightTree(root->right);
-    }
-    return n;
-}
-float weightedAverageHeightTree(vertex *p)
-{
-    float h;
-    h = (float)sumLengthWaysTreeDOP(p, 1) / weightTree(p);
-    return h;
-}
-
-void swap(int *a, int *b)
-{
-    int temp;
-    temp = *a;
-    *a = *b;
-    *b = temp;
 }
 
 int main()
 {
-    int size = 25;
-    int **VandW = new int *[2]; // Данные и их веса
+    srand(time(0));
 
-    for (int i = 0; i < 2; i++)
-    {
-        VandW[i] = new int[size + 1];
-        VandW[i][0] = 0;
-    }
+    int min = 1;
+    int max = 100;
 
-    // Заполение вершин неповторяющимися числами
-    bool table[2 * size] = {false};
-    int x;
-    for (int i = 1; i < size + 1; i++)
+    int *keys = new int[N];
+    int weights[N + 1];
+    int count = 0;
+
+    while (count < N)
     {
-        while (table[x = rand() % (2 * size)])
-            ;
-        table[x] = true;
-        VandW[0][i] = x;
-    }
-    // Сортировка вершин
-    for (int i = 1; i < size + 1; i++)
-    {
-        for (int j = size - 1 + 1; j > i; j--)
+        int num = rand() % (max - min + 1) + min;
+        if (isUnique(num, keys, count))
         {
-            if (VandW[0][j] < VandW[0][j - 1])
-            {
-                swap(&VandW[0][j], &VandW[0][j - 1]);
-            }
+            keys[count] = num;
+            weights[count] = rand() % 100 + 1;
+            count++;
         }
     }
-    // Случайные веса для вершин
-    for (int i = 1; i < size + 1; i++)
+
+    // Сортировка ключей для корректной вставки в дерево
+    sort(keys, keys + N);
+
+    int AW[N + 1][N + 1]{};
+    int AP[N + 1][N + 1]{};
+    int AR[N + 1][N + 1]{};
+
+    matrixAW(AW, weights, N);
+    matrixAP_AR(AW, AP, AR, N);
+
+    printMatrix(AW, N, "AW");
+    printMatrix(AP, N, "AP");
+    printMatrix(AR, N, "AR");
+
+    // Создание дерева
+    vertex *root = createTree(keys, weights, AR, 0, N);
+
+    cout << "output(left to right)" << endl;
+    ObhodLR(root);
+    cout << endl
+         << endl;
+
+    // Инициализация переменных для расчета средней взвешенной высоты
+    root->h = 1;
+    int Wh = root->h * root->W; // начальная высота корня
+    h_init(root, Wh);           // инициализация высот и вычисление суммы
+
+    int Wf = 0; // сумма всех весов
+    for (int i = 0; i < N; i++)
     {
-        VandW[1][i] = rand() % size + 1;
+        Wf += weights[i];
     }
 
-    // Вывод начальных данных и весов
-    short int tmp = 0;
-    for (int i = 1; i < size + 1; i++)
-    {
-        std::cout.width(3);
-        std::cout << VandW[0][i];
-        std::cout << "[";
-        std::cout.width(2);
-        std::cout << VandW[1][i];
-        std::cout << "]" << "  ";
-        tmp++;
-        if (tmp == 10)
-        {
-            std::cout << std::endl;
-            tmp = 0;
-        }
-    }
-    std::cout << std::endl;
-    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+    cout << setw(30) << "size" << setw(30) << "Check sum" << setw(20) << "Height" << setw(43) << "aver. weight. height" << endl;
+    cout << "-------------------------------------------------------------------------------------" << endl;
+    cout << setw(10) << "DOP" << setw(16) << Size(root) << setw(20) << Sum(root) << setw(15) << Height(root) << setw(20) << setprecision(4) << fixed << setw(25) << (float)Wh / Wf << endl;
 
-    int **AW = new int *[size + 1]; // матрица весов
-    int **AP = new int *[size + 1]; // матрица взвешенных высот
-    int **AR = new int *[size + 1]; // матрица индексов
+    float prov = (float)AP[0][N] / AW[0][N];
+    cout << endl;
+    cout << "AP[0][N]/AW[0][N]: " << prov << endl;
 
-    for (int i = 0; i < size + 1; i++)
-    {
-        AW[i] = new int[size + 1];
-        AP[i] = new int[size + 1];
-        AR[i] = new int[size + 1];
-        for (int j = 0; j < size + 1; j++)
-            AW[i][j] = AP[i][j] = AR[i][j] = 0;
-    }
-    calculation_AW(AW, VandW, size + 1);
-    calculation_APandAR(AP, AR, AW, size + 1);
-    if (size < 26)
-    {
-        std::cout << "Matrix AW:" << std::endl;
-        printSquareMatrix(AW, size + 1);
-        std::cout << "Matrix AP:" << std::endl;
-        printSquareMatrix(AP, size + 1);
-        std::cout << "Matrix AR:" << std::endl;
-        printSquareMatrix(AR, size + 1);
-    }
-    vertex *root = nullptr;
-    createvertex(root, 0, size, AR, VandW);
-    work(root);
-
-    std::cout << "\n_____________________\n";
-    std::cout << "Size " << sizeTree(root) << "\n";
-    std::cout << "Checksum " << checkSum(root) << "\n";
-    std::cout << "Height " << height(root) << "\n";
-    std::cout << "Weighted Average Height " << weightedAverageHeightTree(root) << "\n";
-    std::cout << "AP[0,size] / AW[0,size] = " << (double)AP[0][size] / AW[0][size] << "\n";
-    std::cout << "\n\n";
+    delete[] keys;
     return 0;
 }
