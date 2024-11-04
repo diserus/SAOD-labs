@@ -19,6 +19,7 @@ struct Queue
 {
     List *head = nullptr;
     List *tail = nullptr;
+    int size = 0;
     void add(record *rec)
     {
         List *newNode = new List;
@@ -34,6 +35,7 @@ struct Queue
             tail->next = newNode;
             tail = newNode;
         }
+        size++;
     }
     void print()
     {

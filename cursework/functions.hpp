@@ -28,7 +28,31 @@ bool compare(record &r1, record &r2)
     else
         return strcmp(r1.b, r2.b) < 0;
 }
-
+int parseYear(char *date)
+{
+    int year;
+    int day;
+    int month;
+    std::sscanf(date, "%2d-%2d-%2d", &day, &month, &year);
+    return year;
+}
+int comparator(char *word1, char *word2)
+{
+    int i = 0;
+    while (word1[i] != '\0' && word2[i] != '\0')
+    {
+        if ((word1[i] == ' ' && word2[i] != ' '))
+            return -1;
+        else if ((word2[i] == ' ' && word1[i] != ' '))
+            return 1;
+        else if ((word1[i] < word2[i]))
+            return -1;
+        else if ((word1[i] > word2[i]) || (word2[i] == ' ' && word1[i] != ' '))
+            return 1;
+        i++;
+    }
+    return 0;
+}
 void QuickSort(record *arr[], int L, int R)
 {
     record *pivot = arr[L];
@@ -51,14 +75,6 @@ void QuickSort(record *arr[], int L, int R)
         QuickSort(arr, L, j);
     if (i < R)
         QuickSort(arr, i, R);
-}
-int parseYear(char *date)
-{
-    int year;
-    int day;
-    int month;
-    std::sscanf(date, "%2d-%2d-%2d", &day, &month, &year);
-    return year;
 }
 int binarySearch(record *A[], int n, int elem, Queue *&queue)
 {
@@ -94,23 +110,6 @@ int binarySearch(record *A[], int n, int elem, Queue *&queue)
             r = i - 1;
     }
     return 1;
-}
-short int comparator(const char *word1, const char *word2)
-{
-    int i = 0;
-    while (word1[i] != '\0' && word2[i] != '\0')
-    {
-        if ((word1[i] == ' ' && word2[i] != ' '))
-            return -1;
-        else if ((word2[i] == ' ' && word1[i] != ' '))
-            return 1;
-        else if ((word1[i] < word2[i]))
-            return -1;
-        else if ((word1[i] > word2[i]) || (word2[i] == ' ' && word1[i] != ' '))
-            return 1;
-        i++;
-    }
-    return 0;
 }
 bool B2INSERT(vertex *&p, record *data, bool &VR, bool &HR)
 {
@@ -186,20 +185,6 @@ bool B2INSERT(vertex *&p, record *data, bool &VR, bool &HR)
         return false;
     return true;
 }
-
-vertex *createDBD(int n, bool &VR, bool &HR, Queue *queue)
-{
-    vertex *root = NULL;
-    int i = 0;
-    while (i < n)
-    {
-        record *data = queue->head->data;
-        if (B2INSERT(root, data, VR, HR))
-            i++;
-    }
-    return root;
-}
-
 void printRecord(record *rec)
 {
     cout << rec->a << " " << rec->b << " " << rec->c << "\t"
@@ -219,7 +204,7 @@ void displayRecords(record *indexArr[])
         {
             cout << "\nDo you want to continue? (y/n): ";
             cin >> choice;
-
+            system("cls");
             if (choice != 'y' && choice != 'n')
             {
                 cout << "Incorrect input" << endl;
@@ -264,8 +249,15 @@ void delTree(vertex *&p)
         p = nullptr;
     }
 }
+int sizeTree(vertex *vertex)
+{
+    if (vertex == nullptr)
+        return 0;
+    else
+        return 1 + sizeTree(vertex->Left) + sizeTree(vertex->Right);
+}
 
-void findAllVerticesWithKey(vertex *p, char *key)
+void treeSearch(vertex *p, char *key)
 {
     if (p == nullptr)
     {
@@ -276,6 +268,6 @@ void findAllVerticesWithKey(vertex *p, char *key)
     {
         printRecord(p->record);
     }
-    findAllVerticesWithKey(p->Left, key);
-    findAllVerticesWithKey(p->Right, key);
+    treeSearch(p->Left, key);
+    treeSearch(p->Right, key);
 }

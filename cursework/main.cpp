@@ -16,19 +16,32 @@ int main()
     QuickSort(indexArr, 0, 3999);
     char keySearch[30];
     char choice;
+    Queue *queue = nullptr;
+    vertex *root = nullptr;
+    bool bSearched = false;
+    bool treeCreated = false;
     do
     {
-        cout << "\n1. All records\n2. Search\n3. Exit\n";
+        cout << "\n1. All records\n2. Search\n3. Tree\n4. Search in tree\n5. Exit\n";
         cin >> choice;
         if (choice == '1')
         {
+            system("cls");
             displayRecords(indexArr);
         }
         else if (choice == '2')
         {
-            Queue *queue = displaySearch(indexArr, readCount);
-            vertex *root = nullptr;
-            std::cout << "\n-----------------------------------------------------------\n";
+            system("cls");
+            queue = displaySearch(indexArr, readCount);
+            bSearched = true;
+        }
+        else if (choice == '3')
+        {
+            system("cls");
+            if (bSearched == false)
+            {
+                queue = displaySearch(indexArr, readCount);
+            }
             List *temp = queue->head;
             while (temp != nullptr)
             {
@@ -36,15 +49,35 @@ int main()
                 temp = temp->next;
             }
             work(root);
-            queue->clear();
-            cin >> keySearch;
-            findAllVerticesWithKey(root, keySearch);
+            treeCreated = true;
         }
-        else if (choice != '1' && choice != '2' && choice != '3')
+        else if (choice == '4')
         {
+            system("cls");
+            if (treeCreated == false)
+            {
+                queue = displaySearch(indexArr, readCount);
+                List *temp = queue->head;
+                while (temp != nullptr)
+                {
+                    B2INSERT(root, temp->data, VR, HR);
+                    temp = temp->next;
+                }
+                work(root);
+            }
+            std::cout << "Input a search key: ";
+            cin >> keySearch;
+            treeSearch(root, keySearch);
+        }
+        else if (choice == '1' && choice == '2' && choice == '3' && choice == '4' && choice == '5')
+        {
+            system("cls");
             cout << "Incorrect input" << endl;
         }
-    } while (choice != '3');
-
+    } while (choice != '5');
+    std::cout << "Queue: " << queue->size << "\n";
+    std::cout << "Tree: " << sizeTree(root) << "\n";
+    queue->clear();
+    delTree(root);
     return 0;
 }
