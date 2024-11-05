@@ -186,7 +186,7 @@ void printMatrix(int matrix[][N + 1], int N, const string &name)
     cout << endl;
 }
 
-void h_init(vertex *p, int &Wh)
+void heightInit(vertex *p, int &Wh)
 {
     if (p != NULL)
     {
@@ -200,8 +200,8 @@ void h_init(vertex *p, int &Wh)
             p->right->h = p->h + 1;
             Wh += p->right->h * p->right->W;
         }
-        h_init(p->left, Wh);
-        h_init(p->right, Wh);
+        heightInit(p->left, Wh);
+        heightInit(p->right, Wh);
     }
 }
 
@@ -226,6 +226,8 @@ int main()
             count++;
         }
     }
+    vertex *root1 = nullptr;
+    A1(root1, keys, weights, N);
     sort(keys, keys + N);
 
     int AW[N + 1][N + 1]{};
@@ -237,7 +239,7 @@ int main()
     vertex *root = createTree(keys, weights, AR, 0, N);
     root->h = 1;
     int Wh = root->h * root->W;
-    h_init(root, Wh);
+    heightInit(root, Wh);
     int Wf = 0;
     for (int i = 0; i < N; i++)
     {
@@ -245,8 +247,6 @@ int main()
     }
     work(root);
     std::cout << "\n";
-    vertex *root1 = nullptr;
-    A1(root1, keys, weights, N);
     work(root1);
     vertex *root2 = nullptr;
     A2(root2, keys, weights, 0, N - 1);
@@ -256,11 +256,11 @@ int main()
 
     root1->h = 1;
     int Wh1 = root1->h * root1->W;
-    h_init(root1, Wh1);
+    heightInit(root1, Wh1);
 
     root2->h = 1;
     int Wh2 = root2->h * root2->W;
-    h_init(root2, Wh2);
+    heightInit(root2, Wh2);
 
     std::cout << "\n\nN = 100" << std::setw(10) << "Size" << std::setw(15) << "Checksum" << std::setw(15) << "Height" << std::setw(25) << "Average weight heigth\n";
     std::cout << "DOP" << std::setw(14) << Size(root) << std::setw(14) << Sum(root) << std::setw(12) << Height(root) << std::setw(19) << std::setprecision(2) << std::fixed << (float)Wh / Wf << "\n";

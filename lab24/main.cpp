@@ -167,7 +167,18 @@ void h_init(vertex *p, int &Wh)
         h_init(p->right, Wh);
     }
 }
-
+void Print(vertex *q, long n)
+{
+    long i;
+    if (q)
+    {
+        Print(q->right, n + 5);
+        for (i = 0; i < n; i++)
+            printf(" ");
+        printf("%d<\n", q->data);
+        Print(q->left, n + 5);
+    }
+}
 int main()
 {
     srand(time(0));
@@ -223,14 +234,14 @@ int main()
         Wf += weights[i];
     }
 
-    cout << setw(30) << "size" << setw(30) << "Check sum" << setw(20) << "Height" << setw(43) << "aver. weight. height" << endl;
+    cout << setw(27) << "size" << setw(20) << "Check sum" << setw(20) << "Height" << setw(30) << "aver. weight. height" << endl;
     cout << "-------------------------------------------------------------------------------------" << endl;
     cout << setw(10) << "DOP" << setw(16) << Size(root) << setw(20) << Sum(root) << setw(15) << Height(root) << setw(20) << setprecision(4) << fixed << setw(25) << (float)Wh / Wf << endl;
 
     float prov = (float)AP[0][N] / AW[0][N];
     cout << endl;
     cout << "AP[0][N]/AW[0][N]: " << prov << endl;
-
+    Print(root, 0);
     delete[] keys;
     return 0;
 }
