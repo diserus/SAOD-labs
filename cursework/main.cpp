@@ -40,6 +40,7 @@ int main()
             system("cls");
             if (bSearched == false)
             {
+                delTree(root);
                 queue = displaySearch(indexArr, readCount);
             }
             List *temp = queue->head;
@@ -56,6 +57,7 @@ int main()
             system("cls");
             if (treeCreated == false)
             {
+                delTree(root);
                 queue = displaySearch(indexArr, readCount);
                 List *temp = queue->head;
                 while (temp != nullptr)
@@ -78,6 +80,5 @@ int main()
     std::cout << "Queue: " << queue->size << "\n";
     std::cout << "Tree: " << sizeTree(root) << "\n";
     queue->clear();
-    delTree(root);
     return 0;
 }

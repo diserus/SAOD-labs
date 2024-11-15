@@ -117,7 +117,7 @@ bool B2INSERT(vertex *&p, record *data, bool &VR, bool &HR)
     {
         p = new vertex;
         strcpy(p->data, data->a);
-        p->Left = p->Right = nullptr;
+        p->Left = p->Right = p->simmilar = nullptr;
         p->record = data;
         p->balance = false;
         VR = true;
@@ -182,7 +182,35 @@ bool B2INSERT(vertex *&p, record *data, bool &VR, bool &HR)
             return false;
     }
     else
-        return false;
+    {
+        if (B2INSERT(p->simmilar, data, VR, HR))
+        {
+            if (VR)
+            {
+                p->balance = true;
+                HR = true;
+                VR = false;
+            }
+            else if (HR)
+            {
+                if (p->balance)
+                {
+                    vertex *q = p->Right;
+                    p->balance = false;
+                    q->balance = false;
+                    p->Right = q->Left;
+                    q->Left = p;
+                    p = q;
+                    VR = true;
+                    HR = false;
+                }
+                else
+                    HR = false;
+            }
+        }
+        else
+            return false;
+    }
     return true;
 }
 void printRecord(record *rec)
@@ -235,6 +263,7 @@ void work(vertex *p)
     {
         work(p->Left);
         printRecord(p->record);
+        work(p->simmilar);
         work(p->Right);
     }
 }
@@ -243,6 +272,7 @@ void delTree(vertex *&p)
     if (p != nullptr)
     {
         delTree(p->Left);
+        delTree(p->simmilar);
         delTree(p->Right);
 
         delete p;
@@ -254,7 +284,7 @@ int sizeTree(vertex *vertex)
     if (vertex == nullptr)
         return 0;
     else
-        return 1 + sizeTree(vertex->Left) + sizeTree(vertex->Right);
+        return 1 + sizeTree(vertex->Left) + sizeTree(vertex->Right) + sizeTree(vertex->simmilar);
 }
 
 void treeSearch(vertex *p, char *key)
@@ -263,11 +293,14 @@ void treeSearch(vertex *p, char *key)
     {
         return;
     }
-    int cmp = strncmp(key, p->data, 3);
+    treeSearch(p->Left, key);
+    size_t lenPrefix = strlen(key);
+    int cmp = strncmp(p->data, key, lenPrefix);
     if (cmp == 0)
     {
         printRecord(p->record);
     }
-    treeSearch(p->Left, key);
+
+    treeSearch(p->simmilar, key);
     treeSearch(p->Right, key);
 }

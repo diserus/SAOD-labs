@@ -65,5 +65,6 @@ struct vertex
     record *record;
     vertex *Left = nullptr;
     vertex *Right = nullptr;
+    vertex *simmilar = nullptr;
     bool balance;
 };
