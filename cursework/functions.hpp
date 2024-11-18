@@ -292,20 +292,14 @@ void printAllRecords(vertex *node, char *key)
 {
     if (node == nullptr)
         return;
-
     size_t lenPrefix = strlen(key);
     int cmp = strncmp(node->data, key, lenPrefix);
-
-    // Обходим левое поддерево
     printAllRecords(node->Left, key);
-    printAllRecords(node->simmilar, key);
-    // Если текущий узел соответствует ключу или больше, выводим его
-    if (cmp >= 0)
+    if (cmp == 0)
     {
         printRecord(node->record);
     }
-
-    // Обходим правое поддерево
+    printAllRecords(node->simmilar, key);
     printAllRecords(node->Right, key);
 }
 void treeSearch(vertex *root, char *key)
@@ -327,7 +321,6 @@ void treeSearch(vertex *root, char *key)
         else
         {
             printAllRecords(p, key);
-            printAllRecords(p->Right, key);
             return;
         }
     }
