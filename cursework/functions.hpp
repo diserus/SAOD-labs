@@ -4,6 +4,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <ctime>
+#include <string>
+#include <stdio.h>
 #include "struct.hpp"
 using namespace std;
 void parseDate(char *date, int &day, int &month, int &year)
@@ -286,21 +288,47 @@ int sizeTree(vertex *vertex)
     else
         return 1 + sizeTree(vertex->Left) + sizeTree(vertex->Right) + sizeTree(vertex->simmilar);
 }
-
-void treeSearch(vertex *p, char *key)
+void printAllRecords(vertex *node, char *key)
 {
-    if (p == nullptr)
-    {
+    if (node == nullptr)
         return;
-    }
-    treeSearch(p->Left, key);
+
     size_t lenPrefix = strlen(key);
-    int cmp = strncmp(p->data, key, lenPrefix);
-    if (cmp == 0)
+    int cmp = strncmp(node->data, key, lenPrefix);
+
+    // Обходим левое поддерево
+    printAllRecords(node->Left, key);
+    printAllRecords(node->simmilar, key);
+    // Если текущий узел соответствует ключу или больше, выводим его
+    if (cmp >= 0)
     {
-        printRecord(p->record);
+        printRecord(node->record);
     }
 
-    treeSearch(p->simmilar, key);
-    treeSearch(p->Right, key);
+    // Обходим правое поддерево
+    printAllRecords(node->Right, key);
+}
+void treeSearch(vertex *root, char *key)
+{
+    vertex *p = root;
+    size_t lenPrefix = strlen(key);
+    while (p != nullptr)
+    {
+
+        int cmp = strncmp(p->data, key, lenPrefix);
+        if (cmp < 0)
+        {
+            p = p->Right;
+        }
+        else if (cmp > 0)
+        {
+            p = p->Left;
+        }
+        else
+        {
+            printAllRecords(p, key);
+            printAllRecords(p->Right, key);
+            return;
+        }
+    }
 }

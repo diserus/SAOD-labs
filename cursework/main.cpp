@@ -14,7 +14,7 @@ int main()
     for (int i = 0; i < readCount; i++)
         indexArr[i] = &mas3[i];
     QuickSort(indexArr, 0, 3999);
-    char keySearch[30];
+    char keySearch[32];
     char choice;
     Queue *queue = nullptr;
     vertex *root = nullptr;
@@ -23,7 +23,7 @@ int main()
     do
     {
         cout << "\n1. All records\n2. Search\n3. Tree\n4. Search in tree\n5. Exit\n";
-        cin >> choice;
+        std::cin >> choice;
         if (choice == '1')
         {
             system("cls");
@@ -68,7 +68,9 @@ int main()
                 work(root);
             }
             std::cout << "Input a search key: ";
-            cin >> keySearch;
+
+            std::cin.ignore();
+            std::cin.getline(keySearch, sizeof(keySearch));
             treeSearch(root, keySearch);
         }
         else if (choice == '1' && choice == '2' && choice == '3' && choice == '4' && choice == '5')
