@@ -68,3 +68,17 @@ struct vertex
     vertex *simmilar = nullptr;
     bool balance;
 };
+
+struct codeShannon
+{
+    char ch = 0;
+    float P = 0;
+    float Q = 0;
+    int L = 0;
+    char *codeword = nullptr;
+};
+struct chanceSymbol
+{
+    char ch = 0;
+    float chance = 0;
+};
