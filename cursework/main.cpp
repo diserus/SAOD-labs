@@ -10,9 +10,8 @@ int main()
 {
     FILE *fp = fopen("testBase4.dat", "rb");
     record mas3[4000] = {0};
-
     int readCount = fread((record *)mas3, sizeof(record), 4000, fp);
-    record *indexArr[readCount];
+    record **indexArr = new record *[readCount];
     for (int i = 0; i < readCount; i++)
         indexArr[i] = &mas3[i];
     QuickSort(indexArr, 0, 3999);
@@ -22,11 +21,11 @@ int main()
     vertex *root = nullptr;
     bool bSearched = false;
     bool treeCreated = false;
-    int numsUnique;
-    std::vector<chanceSymbol> symbols;
-    calculateProbSymbols("testBase4.dat", symbols, numsUnique);
-    std::sort(symbols.begin(), symbols.end(), compareChances);
-    chanceSymbol *chanceSymbols = symbols.data();
+    int numsUnique = 0;
+    float compression = 0;
+    chanceSymbol *chanceSymbols = nullptr;
+    calculateProbSymbols("testBase4.dat", chanceSymbols, numsUnique);
+
     codeShannon *codeShanon = ShannonCode(numsUnique, chanceSymbols);
     do
     {
@@ -83,11 +82,16 @@ int main()
         }
         else if (choice == '5')
         {
-            std::cout << "Symbol" << std::setw(20) << "Chance symbol" << std::setw(20) << "Code word" << std::setw(30) << "Length code word" << "\n";
+            std::cout << "N" << setw(20) << "Symbol" << setw(20) << "Propability" << setw(20) << "Codeword" << setw(20) << "Length\n";
+
             for (int i = 0; i < numsUnique; i++)
             {
-                std::cout << codeShanon[i].ch << std::setw(20) << codeShanon[i].P << std::setw(20) << codeShanon[i].codeword << std::setw(30) << codeShanon[i].L << "\n";
+                std::cout << i << setw(20) << codeShanon[i].ch << setw(20) << std::fixed << std::setprecision(10) << codeShanon[i].P << setw(20) << codeShanon[i].codeword << setw(20) << codeShanon[i].L << std::endl;
             }
+            std::cout << "\nEntrophy:" << std::fixed << std::setprecision(4) << calculationEntropy(chanceSymbols, numsUnique) << "\n";
+            std::cout << "\nRedundancy: " << std::fixed << std::setprecision(4) << calculationAverageLength(codeShanon, numsUnique) - calculationEntropy(chanceSymbols, numsUnique) << "\n";
+            compression = encodeDataBase(codeShanon);
+            std::cout << "Compression: " << compression;
         }
         else if (choice == '1' && choice == '2' && choice == '3' && choice == '4' && choice == '5' && choice == '6')
         {
@@ -98,6 +102,13 @@ int main()
     std::cout << "Queue: " << queue->size << "\n";
     std::cout << "Tree: " << sizeTree(root) << "\n";
     queue->clear();
-    delete codeShanon;
+
+    for (int i = 0; i < numsUnique; i++)
+    {
+        delete[] codeShanon[i].codeword; // Освобождаем память для кодовых слов
+    }
+    delete[] codeShanon;
+    delete[] indexArr;
+    delete[] chanceSymbols;
     return 0;
 }

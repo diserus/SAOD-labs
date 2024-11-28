@@ -5,7 +5,10 @@
 #include <unordered_map>
 #include <algorithm>
 #include "struct.hpp"
-
+bool compareChances(const chanceSymbol &a, const chanceSymbol &b)
+{
+    return a.chance > b.chance;
+}
 codeShannon *ShannonCode(int numAlphabet, chanceSymbol *&chanceSymbols)
 {
     codeShannon *shannon = new codeShannon[numAlphabet];
@@ -39,48 +42,87 @@ codeShannon *ShannonCode(int numAlphabet, chanceSymbol *&chanceSymbols)
         }
         shannon[i].codeword[shannon[i].L] = '\0';
     }
-
     return shannon;
 }
 
-void calculateProbSymbols(const std::string filename, std::vector<chanceSymbol> &chanceSymbols, int &numsUnique)
+void calculateProbSymbols(const std::string filename, chanceSymbol *&chanceSymbols, int &numsUnique)
 {
-    int windows866[256] = {0};
-    int totalNums = 0;
-    char ch;
-
-    std::fstream file(filename, std::ios::in | std::ios::binary);
-    if (!file.is_open())
-    {
-        std::cout << "Error opening file";
-        exit(1);
-    }
-
-    while (file.read((char *)&ch, sizeof(ch)))
-    {
-        totalNums++;
-        if (int(ch) < 0)
-            windows866[int(ch) + 256]++;
-        else
-            windows866[int(ch)]++;
-    }
-    file.close();
-
+    chanceSymbols = new chanceSymbol[256];
+    int numsTotal = 0;
     numsUnique = 0;
     for (int i = 0; i < 256; i++)
     {
-        if (windows866[i] != 0)
-        {
-            numsUnique++;
-            chanceSymbol symbol;
-            symbol.ch = char(i);
-            symbol.chance = (float)windows866[i] / (float)totalNums;
-            chanceSymbols.push_back(symbol);
-        }
+        chanceSymbols[i].ch = (char)(i - 128);
+        chanceSymbols[i].chance = 0;
+    }
+    FILE *fp;
+    fp = fopen("testBase4.dat", "rb");
+    while (!feof(fp))
+    {
+        char c;
+        fscanf(fp, "%c", &c);
+        if (feof(fp))
+            break;
+        chanceSymbols[c + 128].chance += 1;
+        numsTotal++;
+    }
+    printf("\n");
+    fclose(fp);
+
+    std::sort(chanceSymbols, chanceSymbols + 256, compareChances);
+    for (int i = 0; i < 256 && chanceSymbols[i].chance != 0; i++)
+    {
+        chanceSymbols[i].chance /= numsTotal;
+        numsUnique++;
     }
 }
 
-bool compareChances(const chanceSymbol &a, const chanceSymbol &b)
+float calculationEntropy(chanceSymbol *&A, int nums)
 {
-    return a.chance > b.chance;
+    float answer = 0;
+    for (int i = 0; i < nums; i++)
+    {
+        answer += (A[i].chance * log2(A[i].chance));
+    }
+    return -answer;
+}
+float calculationAverageLength(codeShannon *A, int nums)
+{
+    float answer = 0;
+    for (int i = 0; i < nums; i++)
+    {
+        answer += A[i].L * A[i].P;
+    }
+    return answer;
+}
+
+float encodeDataBase(codeShannon *code)
+{
+    int fcompression = 0;
+    int cfcompression = 0;
+    FILE *fp, *fcoded;
+    fp = fopen("testBase4.dat", "rb");
+    fcoded = fopen("encoded.dat", "wb");
+
+    char buffer;
+    while (!feof(fp))
+    {
+        fscanf(fp, "%c", &buffer);
+        fcompression++;
+        for (int i = 0; i < 166; i++)
+        {
+            if (buffer == (char)(i - 128))
+            {
+                for (int j = 0; j < code[i].L; j++)
+                {
+                    putc(code[i].codeword[j], fcoded);
+                    cfcompression++;
+                }
+            }
+        }
+    }
+
+    fclose(fp);
+    fclose(fcoded);
+    return (float)fcompression / cfcompression;
 }
