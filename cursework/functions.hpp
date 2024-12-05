@@ -8,6 +8,15 @@
 #include <stdio.h>
 #include "struct.hpp"
 using namespace std;
+record** readDataBase(record* mas3, int& readCount) {
+    FILE* fp = fopen("testBase4.dat", "rb");
+    readCount = fread((record*)mas3, sizeof(record), 4000, fp);
+    record** indexArr = new record*[readCount];
+    for (int i = 0; i < readCount; i++)
+        indexArr[i] = &mas3[i];
+    return indexArr;
+}
+
 void parseDate(char *date, int &day, int &month, int &year)
 {
     std::sscanf(date, "%2d-%2d-%2d", &day, &month, &year);

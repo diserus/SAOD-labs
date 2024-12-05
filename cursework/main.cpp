@@ -8,12 +8,9 @@ bool VR;
 
 int main()
 {
-    FILE *fp = fopen("testBase4.dat", "rb");
     record mas3[4000] = {0};
-    int readCount = fread((record *)mas3, sizeof(record), 4000, fp);
-    record **indexArr = new record *[readCount];
-    for (int i = 0; i < readCount; i++)
-        indexArr[i] = &mas3[i];
+    int readCount;  
+    record **indexArr = readDataBase(mas3, readCount); 
     QuickSort(indexArr, 0, 3999);
     char keySearch[32];
     char choice;
